@@ -3,154 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Santa Banta Bakery | Online Ordering</title>
+    <title>Santa Banta Bakery | Order Online</title>
+    <!-- Tailwind for Styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --brand-maroon: #4a1010; --brand-orange: #ff8c00; }
         .bg-brand-maroon { background-color: var(--brand-maroon); }
         .text-brand-orange { color: var(--brand-orange); }
         .border-brand-orange { border-color: var(--brand-orange); }
-    </script>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
 </head>
 <body class="bg-gray-50 font-sans">
 
     <!-- Header -->
     <header class="bg-brand-maroon text-white sticky top-0 z-50 shadow-lg">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tight text-brand-orange">SANTA BANTA</h1>
-            <button onclick="toggleCart()" class="relative p-2">
-                <i class="fa-solid fa-cart-shopping text-xl"></i>
-                <span id="cart-count" class="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-brand-orange">SANTA BANTA</h1>
+                <p class="text-[10px] text-gray-300">BAKERY & FAST FOOD</p>
+            </div>
+            <button onclick="toggleCart()" class="relative p-2 bg-white/10 rounded-full">
+                <i class="fa-solid fa-basket-shopping text-xl text-brand-orange"></i>
+                <span id="cart-count" class="absolute -top-1 -right-1 bg-white text-brand-maroon text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">0</span>
             </button>
         </div>
     </header>
 
-    <!-- Menu Categories Navigation -->
-    <div class="bg-white border-b sticky top-[64px] z-40 overflow-x-auto no-scrollbar">
-        <div class="container mx-auto px-4 py-3 flex space-x-6 text-sm font-bold text-gray-600 whitespace-nowrap">
-            <a href="#patties" class="hover:text-brand-orange">PATTIES</a>
-            <a href="#pizza" class="hover:text-brand-orange">PIZZA</a>
-            <a href="#burger" class="hover:text-brand-orange">BURGER</a>
-            <a href="#momos" class="hover:text-brand-orange">MOMOS</a>
-            <a href="#beverages" class="hover:text-brand-orange">SHAKES</a>
+    <!-- Category Scroller -->
+    <nav class="bg-white border-b sticky top-[72px] z-40 overflow-x-auto no-scrollbar shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex space-x-8 text-xs font-black text-gray-500 uppercase tracking-widest">
+            <a href="#patties" class="hover:text-brand-orange transition">Patties</a>
+            <a href="#pizza" class="hover:text-brand-orange transition">Pizza</a>
+            <a href="#burger" class="hover:text-brand-orange transition">Burger</a>
+            <a href="#momos" class="hover:text-brand-orange transition">Momos</a>
+            <a href="#chinese" class="hover:text-brand-orange transition">Chinese</a>
+            <a href="#beverages" class="hover:text-brand-orange transition">Beverages</a>
         </div>
-    </div>
+    </nav>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <div id="menu-container" class="grid gap-8">
-            <!-- Items will be injected here by JavaScript -->
+    <!-- Menu Content -->
+    <main class="container mx-auto px-4 py-6 mb-20">
+        <div id="menu-display" class="space-y-10">
+            <!-- JavaScript will inject the menu here -->
+            <div class="text-center py-20 text-gray-400">Loading Menu...</div>
         </div>
     </main>
 
-    <!-- Shopping Cart Sidebar -->
-    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50 overflow-y-auto">
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold">Your Order</h2>
-                <button onclick="toggleCart()" class="text-gray-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-96 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex flex-col">
+        <div class="p-6 border-b flex justify-between items-center bg-brand-maroon text-white">
+            <h2 class="text-xl font-bold">Your Basket</h2>
+            <button onclick="toggleCart()" class="text-white hover:text-brand-orange"><i class="fa-solid fa-xmark text-2xl"></i></button>
+        </div>
+        <div id="cart-items" class="flex-grow overflow-y-auto p-6 space-y-4">
+            <p class="text-gray-400 text-center mt-10">Your basket is empty</p>
+        </div>
+        <div class="p-6 border-t bg-gray-50">
+            <div class="flex justify-between font-black text-xl mb-4 text-brand-maroon">
+                <span>Total Amount</span>
+                <span id="cart-total">₹0</span>
             </div>
-            <div id="cart-items" class="space-y-4 mb-6">
-                <!-- Cart items injected here -->
-            </div>
-            <div class="border-t pt-4">
-                <div class="flex justify-between font-bold text-lg mb-4">
-                    <span>Total</span>
-                    <span id="cart-total">₹0</span>
-                </div>
-                <button onclick="placeOrder()" class="w-full bg-brand-maroon text-brand-orange font-bold py-4 rounded-xl shadow-lg hover:bg-black transition">
-                    PLACE ORDER (FINISH)
-                </button>
-            </div>
+            <button onclick="checkout()" class="w-full bg-brand-maroon text-brand-orange font-black py-4 rounded-xl shadow-xl active:scale-95 transition-all uppercase tracking-widest">
+                Confirm Order
+            </button>
         </div>
     </div>
 
     <script>
-        const menuData = {
-            "Puff (Patties)": [
-                { id: 1, name: "Aalu Patties", price: 30 },
-                { id: 2, name: "Masala Patties", price: 40 },
-                { id: 3, name: "Paneer Patties", price: 60 }
+        // Data exactly from your menu image
+        const menu = {
+            "Patties": [
+                { name: "Aalu Patties", price: 30 },
+                { name: "Masala Patties", price: 40 },
+                { name: "Paneer Patties", price: 60 }
             ],
             "Pizza": [
-                { id: 4, name: "Margherita Pizza", price: 120 },
-                { id: 5, name: "Paneer Tandoori Pizza", price: 190 },
-                { id: 6, name: "All In One Pizza", price: 220 }
+                { name: "Margherita Pizza", price: 120 },
+                { name: "Paneer Tandoori Pizza", price: 190 },
+                { name: "All In One Pizza", price: 220 }
             ],
             "Burger": [
-                { id: 7, name: "Aalu Tikki Burger", price: 50 },
-                { id: 8, name: "Cheese Burger", price: 70 },
-                { id: 9, name: "All In Burger", price: 100 }
+                { name: "Aalu Tikki Burger", price: 50 },
+                { name: "Paneer Burger", price: 70 },
+                { name: "All In Burger", price: 100 }
             ],
-            "Beverage": [
-                { id: 10, name: "Cold Coffee", price: 110 },
-                { id: 11, name: "Oreo Shake", price: 110 },
-                { id: 12, name: "Kit Kat Shake", price: 120 }
+            "Momos": [
+                { name: "Veg Steam Momos", price: 90 },
+                { name: "Paneer Steam Momos", price: 110 },
+                { name: "Paneer Tandoori Momos", price: 150 }
+            ],
+            "Chinese": [
+                { name: "Hakka Noodles", price: 80 },
+                { name: "Chilli Paneer", price: 160 },
+                { name: "Manchurian", price: 110 }
+            ],
+            "Beverages": [
+                { name: "Cold Coffee", price: 110 },
+                { name: "Kit Kat Shake", price: 120 },
+                { name: "Oreo Shake", price: 110 }
             ]
         };
 
-        let cart = [];
+        let basket = [];
 
-        function renderMenu() {
-            const container = document.getElementById('menu-container');
-            for (const [category, items] of Object.entries(menuData)) {
-                let html = `<section id="${category.toLowerCase()}"><h3 class="text-xl font-black mb-4 border-l-4 border-brand-orange pl-3">${category.toUpperCase()}</h3><div class="grid md:grid-cols-2 gap-4">`;
+        function init() {
+            const display = document.getElementById('menu-display');
+            display.innerHTML = '';
+            
+            for (const [cat, items] of Object.entries(menu)) {
+                let section = `
+                    <section id="${cat.toLowerCase()}">
+                        <h3 class="text-lg font-black text-brand-maroon mb-4 flex items-center">
+                            <span class="w-8 h-1 bg-brand-orange mr-2 rounded"></span> ${cat.toUpperCase()}
+                        </h3>
+                        <div class="grid gap-3">`;
+                
                 items.forEach(item => {
-                    html += `
-                        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
+                    section += `
+                        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
                             <div>
                                 <h4 class="font-bold text-gray-800">${item.name}</h4>
-                                <p class="text-brand-orange font-semibold">₹${item.price}</p>
+                                <p class="text-brand-orange font-bold text-sm">₹${item.price}</p>
                             </div>
-                            <button onclick="addToCart(${item.id}, '${item.name}', ${item.price})" class="bg-white border border-brand-orange text-brand-orange px-6 py-1 rounded-lg font-bold hover:bg-orange-50 transition">ADD</button>
+                            <button onclick="addToBasket('${item.name}', ${item.price})" 
+                                class="bg-orange-50 text-brand-orange border border-brand-orange px-5 py-1.5 rounded-lg font-black text-xs hover:bg-brand-orange hover:text-white transition-all active:scale-90">
+                                ADD
+                            </button>
                         </div>`;
                 });
-                html += `</div></section>`;
-                container.innerHTML += html;
+                
+                section += `</div></section>`;
+                display.innerHTML += section;
             }
         }
 
-        function addToCart(id, name, price) {
-            const existing = cart.find(i => i.id === id);
-            if (existing) { existing.qty++; } else { cart.push({ id, name, price, qty: 1 }); }
-            updateCartUI();
+        function addToBasket(name, price) {
+            const found = basket.find(i => i.name === name);
+            if (found) { found.qty++; } 
+            else { basket.push({ name, price, qty: 1 }); }
+            renderBasket();
+            // Subtle pop animation for cart count
+            const count = document.getElementById('cart-count');
+            count.classList.add('scale-125');
+            setTimeout(() => count.classList.remove('scale-125'), 200);
         }
 
-        function updateCartUI() {
+        function renderBasket() {
             const list = document.getElementById('cart-items');
-            const count = document.getElementById('cart-count');
-            const total = document.getElementById('cart-total');
-            
-            list.innerHTML = cart.map(item => `
-                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
-                    <div>
-                        <p class="font-bold text-sm">${item.name}</p>
-                        <p class="text-xs text-gray-500">₹${item.price} x ${item.qty}</p>
-                    </div>
-                    <p class="font-bold text-brand-orange">₹${item.price * item.qty}</p>
-                </div>
-            `).join('');
+            const totalEl = document.getElementById('cart-total');
+            const countEl = document.getElementById('cart-count');
 
-            const sum = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
-            total.innerText = `₹${sum}`;
-            count.innerText = cart.length;
+            if (basket.length === 0) {
+                list.innerHTML = `<p class="text-gray-400 text-center mt-10">Your basket is empty</p>`;
+            } else {
+                list.innerHTML = basket.map(item => `
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <div>
+                            <p class="font-bold text-sm text-gray-800">${item.name}</p>
+                            <p class="text-xs text-gray-500">₹${item.price} x ${item.qty}</p>
+                        </div>
+                        <p class="font-black text-brand-maroon">₹${item.price * item.qty}</p>
+                    </div>
+                `).join('');
+            }
+
+            const total = basket.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+            totalEl.innerText = `₹${total}`;
+            countEl.innerText = basket.reduce((acc, curr) => acc + curr.qty, 0);
         }
 
         function toggleCart() {
             document.getElementById('cart-sidebar').classList.toggle('translate-x-full');
         }
 
-        function placeOrder() {
-            if(cart.length === 0) return alert("Cart is empty!");
-            console.log("Sending to Firebase:", cart);
-            alert("Order Sent! Check your Firebase Console.");
-            cart = [];
-            updateCartUI();
+        function checkout() {
+            if (basket.length === 0) return alert("Select some items first!");
+            // This is where you would call Firebase Firestore to save the order
+            console.log("Order Data:", basket);
+            alert("Order Received at Santa Banta! Total: " + document.getElementById('cart-total').innerText);
+            basket = [];
+            renderBasket();
             toggleCart();
         }
 
-        renderMenu();
+        // Run on load
+        window.onload = init;
     </script>
 </body>
 </html>
