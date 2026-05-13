@@ -3,196 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Santa Banta Bakery | Online</title>
+    <title>Santa Banta Pro | Premium Delivery</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --maroon: #4a1010; --orange: #ff8c00; }
-        .bg-maroon { background-color: var(--maroon); }
-        .text-orange { color: var(--orange); }
-        .border-orange { border-color: var(--orange); }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .animate-item { animation: slideUp 0.4s ease forwards; }
+        :root { --m: #4a1010; --o: #ff8c00; --g: #27ae60; }
+        .bg-m { background-color: var(--m); }
+        .text-o { color: var(--o); }
+        .border-o { border-color: var(--o); }
+        .no-sb::-webkit-scrollbar { display: none; }
+        .cart-bounce { animation: bounce 0.5s; }
+        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
     </style>
 </head>
-<body class="bg-gray-100 font-sans leading-relaxed">
+<body class="bg-gray-50 font-sans selection:bg-orange-100">
 
-    <!-- View Toggle (For Development) -->
-    <div class="fixed bottom-4 left-4 z-[100] flex gap-2">
-        <button onclick="switchView('user')" class="bg-black text-white px-3 py-1 rounded-full text-xs">Customer View</button>
-        <button onclick="switchView('login')" class="bg-black text-white px-3 py-1 rounded-full text-xs">Admin Panel</button>
-    </div>
-
-    <!-- CUSTOMER INTERFACE -->
-    <div id="user-view" class="view">
-        <header class="bg-maroon text-white sticky top-0 z-50 p-4 shadow-xl">
-            <div class="container mx-auto flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-orange rounded-full flex items-center justify-center font-bold">SB</div>
-                    <h1 class="text-xl font-black tracking-tighter">SANTA BANTA</h1>
+    <!-- TOP NAVIGATION -->
+    <nav class="bg-m text-white sticky top-0 z-[100] shadow-2xl p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-o rounded-2xl rotate-3 flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-utensils text-m"></i>
                 </div>
-                <button onclick="toggleCart()" class="bg-white/10 p-2 rounded-xl relative">
-                    <i class="fa-solid fa-bag-shopping text-orange text-xl"></i>
-                    <span id="cart-badge" class="absolute -top-2 -right-2 bg-orange text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-maroon">0</span>
-                </button>
+                <div>
+                    <h1 class="text-xl font-black tracking-tighter leading-none text-o">SANTA BANTA</h1>
+                    <span class="text-[10px] text-gray-400 uppercase tracking-widest">Bakery & Fast Food</span>
+                </div>
             </div>
-        </header>
+            
+            <div class="flex items-center gap-4">
+                <button onclick="switchView('admin-login')" class="text-xs text-gray-400 hover:text-o transition">Admin</button>
+                <div class="relative cursor-pointer" onclick="toggleCart()">
+                    <i class="fa-solid fa-cart-shopping text-2xl text-o"></i>
+                    <span id="c-count" class="absolute -top-2 -right-2 bg-white text-m text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-m">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-        <main class="container mx-auto p-4 mb-24">
-            <div id="menu-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Items injected here -->
+    <!-- SEARCH & FILTER BAR -->
+    <div id="search-bar" class="bg-white p-4 shadow-sm sticky top-[72px] z-[90]">
+        <div class="container mx-auto space-y-3">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="menu-search" onkeyup="filterMenu()" placeholder="Search Paneer, Pizza, Shakes..." class="w-full bg-gray-100 p-4 pl-12 rounded-2xl border-none focus:ring-2 focus:ring-orange-500 transition">
             </div>
-        </main>
-
-        <!-- Cart Sidebar -->
-        <div id="cart-panel" class="fixed inset-y-0 right-0 w-full md:w-96 glass shadow-2xl translate-x-full transition-transform duration-500 z-[60] flex flex-col">
-            <div class="p-6 bg-maroon text-white flex justify-between">
-                <h2 class="font-bold uppercase tracking-widest">Your Order</h2>
-                <button onclick="toggleCart()"><i class="fa-solid fa-x"></i></button>
-            </div>
-            <div id="cart-list" class="flex-grow p-6 overflow-y-auto space-y-4 text-gray-600"></div>
-            <div class="p-6 border-t bg-white">
-                <div class="flex justify-between font-black text-xl mb-4"><span>Total</span><span id="cart-total">₹0</span></div>
-                <button onclick="sendOrderToFirebase()" class="w-full bg-maroon text-orange py-4 rounded-2xl font-black uppercase tracking-widest hover:brightness-125 transition active:scale-95">Place Order</button>
+            <div class="flex gap-2 overflow-x-auto no-sb pb-1">
+                <button class="bg-o text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">All</button>
+                <button class="bg-gray-100 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Veg Only</button>
+                <button class="bg-gray-100 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Bestsellers</button>
+                <button class="bg-gray-100 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Offers</button>
             </div>
         </div>
     </div>
 
-    <!-- ADMIN LOGIN -->
-    <div id="login-view" class="view hidden fixed inset-0 bg-maroon flex items-center justify-center p-6 z-[80]">
-        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md text-center">
-            <h2 class="text-2xl font-black mb-6">ADMIN LOGIN</h2>
-            <input type="text" id="admin-user" placeholder="Admin ID" class="w-full p-4 border rounded-2xl mb-4 focus:outline-orange">
-            <input type="password" id="admin-pass" placeholder="Password" class="w-full p-4 border rounded-2xl mb-6 focus:outline-orange">
-            <button onclick="checkLogin()" class="w-full bg-orange text-white py-4 rounded-2xl font-bold">ACCESS PANEL</button>
+    <!-- MAIN MENU (USER VIEW) -->
+    <main id="view-user" class="container mx-auto p-4 mb-32">
+        <!-- Promotional Banner -->
+        <div class="bg-gradient-to-r from-orange-500 to-red-600 rounded-3xl p-6 mb-8 text-white relative overflow-hidden shadow-xl animate__animated animate__fadeIn">
+            <h2 class="text-2xl font-black italic">GET 50% OFF</h2>
+            <p class="text-sm opacity-90">On your first order at Santa Banta!</p>
+            <i class="fa-solid fa-cake-candles absolute right-[-20px] bottom-[-20px] text-8xl opacity-20 rotate-12"></i>
+        </div>
+
+        <div id="menu-items" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- JavaScript Injects Items -->
+        </div>
+    </main>
+
+    <!-- SHOPPING CART (SIDEBAR) -->
+    <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full md:w-[450px] bg-white shadow-[-20px_0_50px_rgba(0,0,0,0.1)] z-[200] transform translate-x-full transition-all duration-500 flex flex-col">
+        <div class="p-6 bg-m text-white flex justify-between items-center">
+            <h2 class="font-black text-xl tracking-widest text-o">MY BASKET</h2>
+            <button onclick="toggleCart()" class="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-full transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        
+        <!-- Address Section (New Feature) -->
+        <div class="p-4 bg-orange-50 border-b border-orange-100 flex items-center gap-3">
+            <i class="fa-solid fa-location-dot text-o"></i>
+            <div>
+                <p class="text-[10px] uppercase font-bold text-gray-500">Delivering to</p>
+                <p class="text-xs font-bold text-gray-800">Home • Laxmangarh, Rajasthan</p>
+            </div>
+        </div>
+
+        <div id="cart-content" class="flex-grow overflow-y-auto p-6 space-y-4">
+            <!-- Cart Items -->
+        </div>
+
+        <div class="p-6 bg-white border-t-2 border-gray-100">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-gray-400 text-sm">Item Total</span>
+                <span id="sub-total" class="font-bold">₹0</span>
+            </div>
+            <div class="flex justify-between items-center mb-4 text-green-600">
+                <span class="text-sm">Delivery Fee</span>
+                <span class="font-bold">FREE</span>
+            </div>
+            <div class="flex justify-between items-center mb-6 text-2xl font-black text-m">
+                <span>Total</span>
+                <span id="grand-total">₹0</span>
+            </div>
+            <button onclick="placeOrder()" class="w-full bg-m text-o py-5 rounded-2xl font-black text-lg shadow-2xl hover:brightness-110 active:scale-95 transition-all">
+                CHECKOUT <i class="fa-solid fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="view-admin-login" class="hidden fixed inset-0 bg-m/95 z-[300] flex items-center justify-center p-6">
+        <div class="bg-white p-10 rounded-[40px] shadow-2xl w-full max-w-md animate__animated animate__zoomIn">
+            <div class="text-center mb-8">
+                <h3 class="text-2xl font-black">Admin Access</h3>
+                <p class="text-gray-400 text-sm">Santa Banta Management Portal</p>
+            </div>
+            <div class="space-y-4">
+                <input type="text" id="admin-id" placeholder="ID (santabanta)" class="w-full p-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-o outline-none transition">
+                <input type="password" id="admin-pw" placeholder="Password (9873)" class="w-full p-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-o outline-none transition">
+                <button onclick="doAdminLogin()" class="w-full bg-o text-white py-4 rounded-2xl font-black text-lg">LOGIN</button>
+                <button onclick="switchView('user')" class="w-full text-gray-400 text-xs font-bold">Cancel</button>
+            </div>
         </div>
     </div>
 
     <!-- ADMIN DASHBOARD -->
-    <div id="admin-view" class="view hidden bg-gray-50 min-h-screen">
-        <nav class="bg-black text-white p-4 flex justify-between items-center">
-            <span class="font-bold text-orange">SANTA BANTA ADMIN</span>
-            <button onclick="switchView('user')" class="text-xs border border-gray-600 px-3 py-1 rounded">Logout</button>
-        </nav>
-        <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-orange">
-                    <p class="text-gray-400 text-sm">New Orders</p>
-                    <h3 class="text-3xl font-black" id="admin-new-count">0</h3>
-                </div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm border-b-4 border-green-500">
-                    <p class="text-gray-400 text-sm">Revenue</p>
-                    <h3 class="text-3xl font-black" id="admin-revenue">₹0</h3>
-                </div>
-            </div>
-            <h3 class="font-bold text-xl mb-4">Live Order Stream</h3>
-            <div id="order-stream" class="space-y-4 text-gray-700">
-                <div class="bg-white p-8 rounded-3xl text-center border-2 border-dashed">Waiting for new orders...</div>
+    <div id="view-admin" class="hidden min-h-screen bg-gray-100 z-[400] relative">
+        <div class="bg-white p-6 shadow-sm flex justify-between items-center">
+            <h2 class="font-black text-xl text-m">DASHBOARD</h2>
+            <button onclick="switchView('user')" class="bg-red-50 text-red-500 px-4 py-2 rounded-xl font-bold text-xs">LOGOUT</button>
+        </div>
+        
+        <div class="p-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white p-6 rounded-3xl shadow-sm"><p class="text-gray-400 text-xs font-bold uppercase">Orders Today</p><h4 class="text-3xl font-black" id="stat-orders">0</h4></div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm"><p class="text-gray-400 text-xs font-bold uppercase">Total Earnings</p><h4 class="text-3xl font-black text-green-500" id="stat-rev">₹0</h4></div>
+        </div>
+
+        <div class="px-6 pb-20">
+            <h3 class="font-black text-lg mb-4 flex items-center gap-2"><span class="w-2 h-6 bg-o rounded-full"></span> LIVE ORDERS</h3>
+            <div id="admin-order-list" class="space-y-4">
+                <!-- Live Orders -->
             </div>
         </div>
     </div>
 
     <script>
-        const menu = [
-            { name: "Aalu Patties", price: 30, cat: "PATTIES" },
-            { name: "Paneer Pizza", price: 180, cat: "PIZZA" },
-            { name: "Chilli Paneer", price: 160, cat: "CHINESE" },
-            { name: "Kit Kat Shake", price: 120, cat: "BEVERAGE" },
-            { name: "Choco Lava", price: 90, cat: "PASTRY" }
+        const fullMenu = [
+            { id: 1, name: "Aalu Patties", price: 30, cat: "Patties", img: "https://images.unsplash.com/photo-1601050638917-3606f548fad8?auto=format&fit=crop&w=200&q=80" },
+            { id: 2, name: "Paneer Tandoori Pizza", price: 190, cat: "Pizza", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=200&q=80" },
+            { id: 3, name: "Veg Steam Momos", price: 90, cat: "Momos", img: "https://images.unsplash.com/photo-1534422298391-e4f8c170db76?auto=format&fit=crop&w=200&q=80" },
+            { id: 4, name: "Chilli Paneer", price: 160, cat: "Chinese", img: "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=200&q=80" },
+            { id: 5, name: "Kit Kat Shake", price: 120, cat: "Beverage", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=200&q=80" },
+            { id: 6, name: "Choco Lava Cake", price: 90, cat: "Pastry", img: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&w=200&q=80" },
+            { id: 7, name: "All In Burger", price: 100, cat: "Burger", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=200&q=80" }
         ];
 
         let cart = [];
         let orders = [];
 
-        function switchView(viewName) {
-            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
-            document.getElementById(viewName + '-view').classList.remove('hidden');
-        }
-
-        function checkLogin() {
-            const user = document.getElementById('admin-user').value;
-            const pass = document.getElementById('admin-pass').value;
-            if(user === "santabanta" && pass === "9873") {
-                switchView('admin');
-                renderAdmin();
-            } else {
-                alert("Incorrect Credentials");
-            }
-        }
-
-        function renderMenu() {
-            const grid = document.getElementById('menu-grid');
-            grid.innerHTML = menu.map((item, index) => `
-                <div class="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex justify-between items-center animate-item" style="animation-delay: ${index * 0.1}s">
-                    <div>
-                        <span class="text-[10px] font-bold text-orange">${item.cat}</span>
-                        <h4 class="font-bold text-gray-800">${item.name}</h4>
-                        <p class="font-black text-maroon">₹${item.price}</p>
+        function renderMenu(items = fullMenu) {
+            const grid = document.getElementById('menu-items');
+            grid.innerHTML = items.map(item => `
+                <div class="bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 group">
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="${item.img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black text-m">★ 4.5</div>
                     </div>
-                    <button onclick="addToCart('${item.name}', ${item.price})" class="w-12 h-12 bg-maroon text-orange rounded-2xl flex items-center justify-center active:scale-90 transition shadow-lg"><i class="fa-solid fa-plus"></i></button>
+                    <div class="p-5 flex justify-between items-center">
+                        <div>
+                            <p class="text-[10px] font-bold text-o uppercase tracking-widest">${item.cat}</p>
+                            <h3 class="font-black text-gray-800">${item.name}</h3>
+                            <p class="text-m font-black">₹${item.price}</p>
+                        </div>
+                        <button onclick="addToCart(${item.id})" class="bg-white border-2 border-o text-o w-12 h-12 rounded-2xl flex items-center justify-center font-black hover:bg-o hover:text-white transition-all active:scale-90">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        function addToCart(name, price) {
-            cart.push({ name, price, id: Date.now() });
-            updateCartUI();
+        function filterMenu() {
+            const term = document.getElementById('menu-search').value.toLowerCase();
+            const filtered = fullMenu.filter(i => i.name.toLowerCase().includes(term) || i.cat.toLowerCase().includes(term));
+            renderMenu(filtered);
         }
 
-        function updateCartUI() {
-            document.getElementById('cart-badge').innerText = cart.length;
-            const list = document.getElementById('cart-list');
-            list.innerHTML = cart.map(i => `<div class="flex justify-between border-b pb-2"><span>${i.name}</span><b>₹${i.price}</b></div>`).join('');
+        function addToCart(id) {
+            const item = fullMenu.find(i => i.id === id);
+            cart.push({...item, cartId: Date.now()});
+            document.getElementById('c-count').classList.add('cart-bounce');
+            setTimeout(() => document.getElementById('c-count').classList.remove('cart-bounce'), 500);
+            updateCart();
+        }
+
+        function updateCart() {
+            document.getElementById('c-count').innerText = cart.length;
+            const content = document.getElementById('cart-content');
             const total = cart.reduce((s, i) => s + i.price, 0);
-            document.getElementById('cart-total').innerText = '₹' + total;
+            
+            content.innerHTML = cart.map((i, idx) => `
+                <div class="flex justify-between items-center animate__animated animate__fadeInRight">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden"><img src="${i.img}" class="w-full h-full object-cover"></div>
+                        <div><p class="font-bold text-sm text-gray-800">${i.name}</p><p class="text-xs text-o font-bold">₹${i.price}</p></div>
+                    </div>
+                    <button onclick="removeFromCart(${idx})" class="text-gray-300 hover:text-red-500"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            `).join('');
+            
+            document.getElementById('sub-total').innerText = '₹' + total;
+            document.getElementById('grand-total').innerText = '₹' + total;
         }
 
-        function toggleCart() { document.getElementById('cart-panel').classList.toggle('translate-x-full'); }
+        function removeFromCart(idx) {
+            cart.splice(idx, 1);
+            updateCart();
+        }
 
-        function sendOrderToFirebase() {
-            if(cart.length === 0) return;
+        function toggleCart() { document.getElementById('cart-sidebar').classList.toggle('translate-x-full'); }
+
+        function switchView(view) {
+            const views = ['view-user', 'view-admin-login', 'view-admin'];
+            views.forEach(v => document.getElementById(v).classList.add('hidden'));
+            document.getElementById('view-' + view).classList.remove('hidden');
+        }
+
+        function doAdminLogin() {
+            const id = document.getElementById('admin-id').value;
+            const pw = document.getElementById('admin-pw').value;
+            if(id === "santabanta" && pw === "9873") {
+                switchView('admin');
+                renderAdmin();
+            } else { alert("Invalid Credentials"); }
+        }
+
+        function placeOrder() {
+            if(cart.length === 0) return alert("Basket is empty!");
             const newOrder = {
-                id: Math.floor(Math.random()*10000),
+                id: Math.floor(Math.random()*9000) + 1000,
                 items: [...cart],
                 total: cart.reduce((s, i) => s + i.price, 0),
-                time: new Date().toLocaleTimeString()
+                time: new Date().toLocaleTimeString(),
+                status: 'Preparing'
             };
             orders.unshift(newOrder);
-            alert("Order Placed Successfully!");
+            alert("✅ Order Placed! Santa Banta is preparing your food.");
             cart = [];
-            updateCartUI();
+            updateCart();
             toggleCart();
         }
 
         function renderAdmin() {
-            const stream = document.getElementById('order-stream');
-            const rev = orders.reduce((s, o) => s + o.total, 0);
-            document.getElementById('admin-new-count').innerText = orders.length;
-            document.getElementById('admin-revenue').innerText = '₹' + rev;
+            const list = document.getElementById('admin-order-list');
+            document.getElementById('stat-orders').innerText = orders.length;
+            document.getElementById('stat-rev').innerText = '₹' + orders.reduce((s, o) => s + o.total, 0);
 
-            stream.innerHTML = orders.map(o => `
-                <div class="bg-white p-6 rounded-3xl shadow-sm border-l-8 border-orange flex justify-between items-center animate-item">
+            list.innerHTML = orders.map(o => `
+                <div class="bg-white p-6 rounded-[32px] shadow-sm border-l-8 border-o flex justify-between items-center animate__animated animate__slideInUp">
                     <div>
-                        <p class="text-xs text-gray-400">Order #${o.id} • ${o.time}</p>
-                        <p class="font-bold">${o.items.map(i => i.name).join(', ')}</p>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="bg-gray-100 px-2 py-1 rounded text-[10px] font-black uppercase">Order #${o.id}</span>
+                            <span class="text-[10px] text-gray-400">${o.time}</span>
+                        </div>
+                        <p class="font-black text-gray-800">${o.items.map(i => i.name).join(', ')}</p>
                     </div>
                     <div class="text-right">
-                        <p class="font-black text-lg">₹${o.total}</p>
-                        <button class="bg-green-100 text-green-600 text-[10px] px-2 py-1 rounded-full font-bold">READY TO PACK</button>
+                        <p class="font-black text-xl text-m">₹${o.total}</p>
+                        <select onchange="updateStatus(${o.id}, this.value)" class="text-[10px] font-bold border-none bg-orange-50 text-o rounded-full px-3 py-1 outline-none">
+                            <option>Preparing</option>
+                            <option>Ready</option>
+                            <option>Out for Delivery</option>
+                            <option>Delivered</option>
+                        </select>
                     </div>
                 </div>
             `).join('');
         }
 
-        function init() {
-            renderMenu();
-            // In a real app, you would use firebase.firestore().onSnapshot() here to sync orders live.
-            setInterval(renderAdmin, 2000); 
+        function updateStatus(id, status) {
+            const o = orders.find(x => x.id === id);
+            o.status = status;
+            renderAdmin();
         }
 
-        window.onload = init;
+        // Initialize
+        window.onload = () => {
+            renderMenu();
+            // In Production: Setup Firebase Firestore listeners here to sync orders and menu
+        };
     </script>
 </body>
 </html>
