@@ -3,267 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shri Shyam Fast Food - Thermal Invoice</title>
+    <title>Shri Shyam Fast Food - Thermal Bill</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Courier New', Courier, monospace; /* Standard Bill Font */
-            margin: 10px;
-            background-color: #f0f0f0;
-            color: #000;
-            font-size: 12px;
-        }
-        /* Bill container size adjusted for 3-inch (80mm) Thermal Roll */
-        .invoice-box {
-            max-width: 280px;
-            margin: auto;
-            background: #fff;
+            font-family: 'Courier New', Courier, monospace; /* Perfect POS font */
+            margin: 0;
             padding: 10px;
-            border: 1px dashed #999;
+            background-color: #f4f4f4;
+            color: #000;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .header h2 {
-            margin: 0 0 5px 0;
-            font-size: 16px;
-            text-transform: uppercase;
-        }
-        .header p {
-            margin: 2px 0;
-            font-size: 11px;
-        }
-        .dashed-line {
-            border-top: 1px dashed #000;
-            margin: 8px 0;
-        }
-        .info-table, .item-table, .total-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-        }
-        .info-table td {
-            padding: 2px 0;
-        }
-        .item-table th {
-            text-align: left;
-            border-bottom: 1px dashed #000;
-            padding-bottom: 5px;
-        }
-        .item-table td {
-            padding: 4px 0;
-            vertical-align: top;
-        }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
         
-        .total-table td {
-            padding: 2px 0;
-        }
-
-        /* Input Form styling (Yeh print me nahi dikhega) */
-        .input-form {
-            max-width: 280px;
+        /* Input Form Screen layout - Print me nahi dikhega */
+        .setup-box {
+            max-width: 320px;
             margin: 10px auto;
             background: #fff;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
         }
-        .input-form h3 { margin-top: 0; font-family: sans-serif; font-size: 14px; }
-        .input-form input, .input-form select {
-            width: 100%;
-            padding: 6px;
-            margin-bottom: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        .setup-box h3 { margin-top: 0; color: #2c3e50; font-size: 16px; text-align: center; }
+        .setup-box input, .setup-box select {
+            width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;
         }
         .btn {
-            width: 100%;
-            padding: 8px;
-            background: #e67e22;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 5px;
+            width: 100%; padding: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px; margin-bottom: 6px;
         }
-        .btn-print { background: #27ae60; }
-        .btn-danger { background: #c0392b; width: auto; padding: 2px 5px; font-size: 9px; color: #fff; border: none; cursor: pointer; }
+        .btn-add { background: #e67e22; color: white; }
+        .btn-print { background: #27ae60; color: white; font-size: 15px; }
+        .btn-del { background: #c0392b; color: white; border: none; padding: 2px 6px; cursor: pointer; font-size: 10px; }
 
-        /* Print Settings: Sirf lamba bill print hoga, baaki sab gayab */
+        /* Exact 80mm POS Thermal Receipt Structure */
+        .pos-receipt {
+            width: 76mm; /* Perfect standard width for 80mm roll */
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 2mm;
+            border: 1px dashed #bbb;
+        }
+        .center { text-align: center; }
+        .right { text-align: right; }
+        
+        .brand-name {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 0 0 2mm 0;
+            text-transform: uppercase;
+        }
+        .shop-info {
+            font-size: 8pt;
+            margin: 1mm 0;
+            line-height: 1.3;
+        }
+        .dashed-divider {
+            border-top: 1px dashed #000;
+            margin: 3mm 0;
+        }
+        
+        /* Table emulation via pure tables for cross-browser printing stability */
+        .bill-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8.5pt;
+        }
+        .bill-table th {
+            border-bottom: 1px dashed #000;
+            padding-bottom: 1.5mm;
+            text-align: left;
+            font-weight: bold;
+        }
+        .bill-table td {
+            padding: 2mm 0 1mm 0;
+            vertical-align: top;
+        }
+        .item-gst-lbl {
+            font-size: 7.5pt;
+            color: #444;
+        }
+        
+        .total-table {
+            width: 80%;
+            margin-left: 20%;
+            border-collapse: collapse;
+            font-size: 8.5pt;
+        }
+        .total-table td { padding: 1mm 0; }
+        .grand-total-row {
+            font-weight: bold;
+            font-size: 10pt;
+        }
+        .grand-total-td {
+            border-top: 1px dashed #000;
+            border-bottom: 1px dashed #000;
+            padding: 2mm 0;
+        }
+
+        /* HARD PRINT CONTROLS: Yeh browser ko bada size karne se rokega */
         @media print {
-            body { background: #fff; margin: 0; padding: 0; }
-            .invoice-box { border: none; max-width: 100%; padding: 0; }
-            .input-form, .btn-danger, .action-col { display: none !important; }
             @page {
-                size: auto;
-                margin: 0mm;
+                size: 80mm auto; /* Automatically decides height based on items, width locked to 80mm */
+                margin: 2mm;
             }
+            body { background: #fff; padding: 0; margin: 0; }
+            .setup-box, .btn-del, .action-th, .action-td { display: none !important; }
+            .pos-receipt { border: none; width: 100%; padding: 0; margin: 0; }
         }
     </style>
 </head>
 <body>
 
-<div class="input-form">
-    <h3>Add Item to Bill</h3>
-    <input type="text" id="custName" placeholder="Customer Name" value="Cash Bill">
-    <input type="text" id="itemName" placeholder="Item Name (e.g., Momo)">
+<div class="setup-box">
+    <h3>Shri Shyam Fast Food Counter</h3>
+    <input type="text" id="custNameInput" placeholder="Customer Name (Optional)" value="Cash Bill">
+    <input type="text" id="itemName" placeholder="Item Name (e.g. Chowmein)">
     <input type="number" id="itemRate" placeholder="Rate (₹)">
     <input type="number" id="itemQty" placeholder="Quantity" value="1">
     <select id="itemGst">
-        <option value="5">5% GST</option>
+        <option value="5" selected>5% GST (Fast Food)</option>
         <option value="12">12% GST</option>
-        <option value="18" selected>18% GST</option>
+        <option value="18">18% GST</option>
         <option value="0">0% GST</option>
     </select>
-    <button class="btn" onclick="addItem()">+ Add Item</button>
-    <button class="btn btn-print" onclick="saveAndPrint()">Save & Print Bill</button>
+    <button class="btn btn-add" onclick="addNewItem()">+ Add Item</button>
+    <button class="btn btn-print" onclick="triggerPrint()">Save & Print Bill</button>
 </div>
 
-<div class="invoice-box">
-    <div class="header">
-        <h2>Shri Shyam Fast Food</h2>
-        <p>Main Market, Near Temple, City</p>
-        <p>GSTIN: 07AAAAA1111A1Z1</p>
-        <p>Mob: +91 9876543210</p>
+<div class="pos-receipt">
+    <div class="center">
+        <div class="brand-name">Shri Shyam Fast Food</div>
+        <div class="shop-info">Main Market, Near Temple, City</div>
+        <div class="shop-info">GSTIN: 07AAAAA1111A1Z1</div>
+        <div class="shop-info">Mob: +91 9876543210</div>
     </div>
 
-    <div class="dashed-line"></div>
+    <div class="dashed-divider"></div>
 
-    <table class="info-table">
+    <table class="bill-table" style="font-size: 8pt;">
         <tr>
-            <td><strong>Inv No:</strong> <span id="invNo"></span></td>
-            <td class="text-right"><strong>Date:</strong> <span id="invDate"></span></td>
+            <td><strong>Bill No:</strong> <span id="billNoId"></span></td>
+            <td class="right"><strong>Date:</strong> <span id="billDateId"></span></td>
         </tr>
         <tr>
-            <td colspan="2"><strong>Cust:</strong> <span id="lblCustName">Cash Bill</span></td>
+            <td colspan="2" style="padding-top: 1mm;"><strong>Cust:</strong> <span id="custNameLabel">Cash Bill</span></td>
         </tr>
     </table>
 
-    <div class="dashed-line"></div>
+    <div class="dashed-divider"></div>
 
-    <table class="item-table">
+    <table class="bill-table">
         <thead>
             <tr>
-                <th style="width: 45%;">Item</th>
-                <th class="text-right" style="width: 15%;">Qty</th>
-                <th class="text-right" style="width: 20%;">Rate</th>
-                <th class="text-right" style="width: 20%;">Total</th>
-                <th class="action-col text-center" style="width: 10%;">X</th>
+                <th style="width: 50%;">Item Description</th>
+                <th class="right" style="width: 12%;">Qty</th>
+                <th class="right" style="width: 18%;">Rate</th>
+                <th class="right" style="width: 20%;">Total</th>
+                <th class="action-th center" style="width: 10%;">X</th>
             </tr>
         </thead>
-        <tbody id="billItems">
+        <tbody id="receiptItemsBody">
             </tbody>
     </table>
 
-    <div class="dashed-line"></div>
+    <div class="dashed-divider"></div>
 
     <table class="total-table">
         <tr>
             <td>Sub Total:</td>
-            <td class="text-right">₹<span id="subTotal">0.00</span></td>
+            <td class="right">₹<span id="subTotalLbl">0.00</span></td>
         </tr>
         <tr>
             <td>CGST Total:</td>
-            <td class="text-right">₹<span id="cgstTotal">0.00</span></td>
+            <td class="right">₹<span id="cgstTotalLbl">0.00</span></td>
         </tr>
         <tr>
             <td>SGST Total:</td>
-            <td class="text-right">₹<span id="sgstTotal">0.00</span></td>
+            <td class="right">₹<span id="sgstTotalLbl">0.00</span></td>
         </tr>
-        <tr style="font-weight: bold; font-size: 13px;">
-            <td>GRAND TOTAL:</td>
-            <td class="text-right">₹<span id="grandTotal">0.00</span></td>
+        <tr class="grand-total-row">
+            <div class="grand-total-td"></div>
+            <td class="grand-total-td">NET TOTAL:</td>
+            <td class="right grand-total-td">₹<span id="grandTotalLbl">0.00</span></td>
         </tr>
     </table>
 
-    <div class="dashed-line"></div>
-    <p class="text-center" style="margin: 5px 0 0 0; font-size: 10px;">Thank You! Visit Again.</p>
+    <div class="center" style="margin-top: 5mm; font-size: 8pt;">
+        <p style="margin: 0;">Thank You! Visit Again.</p>
+    </div>
 </div>
 
 <script>
-    // Date & Bill No setting
-    document.getElementById('invDate').innerText = new Date().toLocaleDateString('en-IN');
-    document.getElementById('invNo').innerText = 'SS-' + Math.floor(1000 + Math.random() * 9000);
+    // System Initialization
+    document.getElementById('billDateId').innerText = new Date().toLocaleDateString('en-IN');
+    document.getElementById('billNoId').innerText = 'SS-' + Math.floor(1000 + Math.random() * 9000);
 
-    // Live customer name change
-    document.getElementById('custName').addEventListener('input', function() {
-        document.getElementById('lblCustName').innerText = this.value || 'Cash Bill';
+    // Live customer name updates
+    document.getElementById('custNameInput').addEventListener('input', function() {
+        document.getElementById('custNameLabel').innerText = this.value || 'Cash Bill';
     });
 
-    let basket = [];
+    let currentCart = [];
 
-    function addItem() {
+    function addNewItem() {
         const name = document.getElementById('itemName').value;
         const rate = parseFloat(document.getElementById('itemRate').value);
         const qty = parseInt(document.getElementById('itemQty').value);
-        const gst = parseFloat(document.getElementById('itemGst').value);
+        const gstPct = parseFloat(document.getElementById('itemGst').value);
 
         if (!name || isNaN(rate) || isNaN(qty) || qty <= 0 || rate <= 0) {
-            alert("Kripya sahi detail bharein!");
+            alert("Kripya item ki details sahi se bharein!");
             return;
         }
 
-        const total = rate * qty;
-        const gstAmt = (total * gst) / 100;
-        const finalAmt = total + gstAmt;
+        const totalValue = rate * qty;
+        const gstCalculated = (totalValue * gstPct) / 100;
+        const netValue = totalValue + gstCalculated;
 
-        basket.push({
-            id: Date.now(),
-            name, qty, rate, gst, total, gstAmt, finalAmt
+        currentCart.push({
+            uniqueId: Date.now(),
+            name, qty, rate, gstPct, totalValue, gstCalculated, netValue
         });
 
-        renderBill();
+        refreshReceipt();
         
-        // Input fields reset
+        // Reset Inputs for next item entry
         document.getElementById('itemName').value = '';
         document.getElementById('itemRate').value = '';
         document.getElementById('itemQty').value = '1';
     }
 
-    function deleteItem(id) {
-        basket = basket.filter(x => x.id !== id);
-        renderBill();
+    function removeItem(uId) {
+        currentCart = currentCart.filter(item => item.uniqueId !== uId);
+        refreshReceipt();
     }
 
-    function renderBill() {
-        const tbody = document.getElementById('billItems');
+    function refreshReceipt() {
+        const tbody = document.getElementById('receiptItemsBody');
         tbody.innerHTML = '';
         
-        let subTotal = 0;
-        let totalGst = 0;
-        let grandTotal = 0;
+        let sumSubTotal = 0;
+        let sumGst = 0;
+        let sumGrandTotal = 0;
 
-        basket.forEach(item => {
-            subTotal += item.total;
-            totalGst += item.gstAmt;
-            grandTotal += item.finalAmt;
+        currentCart.forEach(item => {
+            sumSubTotal += item.totalValue;
+            sumGst += item.gstCalculated;
+            sumGrandTotal += item.netValue;
 
             tbody.innerHTML += `
                 <tr>
-                    <td>${item.name}<br><small style="font-size:9px;color:#555;">GST ${item.gst}%</small></td>
-                    <td class="text-right">${item.qty}</td>
-                    <td class="text-right">${item.rate.toFixed(2)}</td>
-                    <td class="text-right">${item.finalAmt.toFixed(2)}</td>
-                    <td class="action-col text-center">
-                        <button class="btn-danger" onclick="deleteItem(${item.id})">x</button>
+                    <td>${item.name}<br><span class="item-gst-lbl">GST ${item.gstPct}%</span></td>
+                    <td class="right">${item.qty}</td>
+                    <td class="right">${item.rate.toFixed(2)}</td>
+                    <td class="right">${item.netValue.toFixed(2)}</td>
+                    <td class="action-td center">
+                        <button class="btn-del" onclick="removeItem(${item.uniqueId})">x</button>
                     </td>
                 </tr>
             `;
         });
 
-        document.getElementById('subTotal').innerText = subTotal.toFixed(2);
-        document.getElementById('cgstTotal').innerText = (totalGst / 2).toFixed(2);
-        document.getElementById('sgstTotal').innerText = (totalGst / 2).toFixed(2);
-        document.getElementById('grandTotal').innerText = Math.round(grandTotal).toFixed(2);
+        document.getElementById('subTotalLbl').innerText = sumSubTotal.toFixed(2);
+        document.getElementById('cgstTotalLbl').innerText = (sumGst / 2).toFixed(2);
+        document.getElementById('sgstTotalLbl').innerText = (sumGst / 2).toFixed(2);
+        document.getElementById('grandTotalLbl').innerText = Math.round(sumGrandTotal).toFixed(2);
     }
 
-    function saveAndPrint() {
-        if (basket.length === 0) {
-            alert("Bill khali hai!");
+    function triggerPrint() {
+        if (currentCart.length === 0) {
+            alert("Pehle bill me kuch items add kijiye!");
             return;
         }
         window.print();
