@@ -3,95 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shri Shyam Fast Food - Direct POS Print</title>
+    <title>Shri Shyam Fast Food - JIS B8 Bill</title>
     <style>
-        /* Base styles */
         * { box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
-            margin: 0; padding: 10px;
-            background-color: #f0f0f0; color: #000;
-        }
-
-        /* Screen Control Panel (Will NOT print) */
-        .no-print-panel {
-            max-width: 320px; margin: 10px auto;
-            background: #fff; padding: 15px;
-            border-radius: 8px; border: 1px solid #ccc;
-        }
-        .no-print-panel h3 { margin: 0 0 10px 0; text-align: center; font-size: 16px; }
-        .no-print-panel input, .no-print-panel select {
-            width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ddd; border-radius: 4px;
-        }
-        .flex-row { display: flex; gap: 5px; }
-        .btn {
-            width: 100%; padding: 10px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; color: white; margin-bottom: 5px;
-        }
-        .btn-add { background: #e67e22; }
-        .btn-print { background: #27ae60; font-size: 16px; }
-        .btn-del { background: #c0392b; color: white; border: none; padding: 2px 6px; cursor: pointer; font-size: 10px; }
-
-        /* Receipt Style (Screen & Print) */
-        .pos-receipt {
-            width: 76mm; /* Standard 80mm roll printable area */
-            margin: 15px auto;
-            background: #fff;
-            padding: 2mm;
-            border: 1px dashed #999;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 9pt;
-            line-height: 1.2;
-            color: #000;
+            margin: 0; padding: 4px;
+            background-color: #f4f4f4; color: #000;
+            font-size: 7.5pt; /* Chote paper ke liye compact font */
+            line-height: 1.1;
+        }
+
+        /* Entry Form Panel (Sirf Screen par dikhega) */
+        .setup-box {
+            max-width: 260px; margin: 5px auto;
+            background: #fff; padding: 10px;
+            border-radius: 6px; border: 1px solid #ccc;
+            font-family: Arial, sans-serif; font-size: 11px;
+        }
+        .setup-box input, .setup-box select {
+            width: 100%; padding: 5px; margin-bottom: 6px; border: 1px solid #ddd; border-radius: 4px;
+        }
+        .btn {
+            width: 100%; padding: 8px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; color: white;
+        }
+        .btn-add { background: #e67e22; margin-bottom: 4px; }
+        .btn-print { background: #27ae60; font-size: 12px; }
+        .btn-del { background: #c0392b; color: white; border: none; padding: 1px 4px; cursor: pointer; font-size: 8px; }
+
+        /* STRICT JIS B8 SIZE BLOCK (64mm Width) */
+        .b8-receipt {
+            width: 58mm; /* 64mm paper size me safely fit hone ke liye printable width */
+            margin: 10px auto;
+            background: #fff;
+            padding: 1mm;
+            border: 1px dashed #bbb;
         }
         
         .center { text-align: center; }
         .right { text-align: right; }
         .bold { font-weight: bold; }
-        .brand { font-size: 13pt; text-transform: uppercase; margin: 0 0 2mm 0; }
-        .info-txt { font-size: 8pt; margin: 1mm 0; }
-        .divider { border-top: 1px dashed #000; margin: 2mm 0; }
+        .brand { font-size: 10pt; font-weight: bold; text-transform: uppercase; margin: 0; }
+        .shop-info { font-size: 6.5pt; margin: 0.5mm 0; }
+        .divider { border-top: 1px dashed #000; margin: 1.5mm 0; }
         
-        table { width: 100%; border-collapse: collapse; }
-        th { border-bottom: 1px dashed #000; padding-bottom: 1mm; text-align: left; }
-        td { padding: 1.5mm 0; vertical-align: top; }
-        .gst-mark { font-size: 7.5pt; color: #333; }
+        table { width: 100%; border-collapse: collapse; font-size: 7.5pt; }
+        th { border-bottom: 1px dashed #000; padding-bottom: 0.5mm; text-align: left; font-weight: bold; }
+        td { padding: 1mm 0; vertical-align: top; }
         
-        .total-table { width: 100%; }
-        .grand-row { font-size: 10pt; font-weight: bold; }
-        .grand-line { border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 2mm 0; }
+        .total-table { width: 100%; font-size: 7.5pt; margin-top: 1mm; }
+        .total-table td { padding: 0.5mm 0; }
+        .grand-row { font-size: 8.5pt; font-weight: bold; }
+        .grand-line { border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 1mm 0; }
 
-        /* DIRECT PRINT SETTINGS (MAGIC HAPPENS HERE) */
+        /* JIS B8 DIRECT PRINT SETTINGS */
         @media print {
             @page {
-                size: 80mm auto !important; /* Forces standard POS size */
-                margin: 0mm !important; /* Removes default browser margins */
+                size: 64mm auto; /* Locks width to exact JIS B8 width, height automatically adjusts */
+                margin: 0mm !important;
             }
-            body { 
-                background: #fff; 
-                padding: 0; 
-                margin: 0; 
-            }
-            /* Hide everything except the receipt */
-            .no-print-panel, .action-col, .btn-del { 
-                display: none !important; 
-            }
-            /* Remove border for clean print */
-            .pos-receipt { 
-                border: none; 
-                margin: 0; 
-                width: 76mm !important; /* strict width for roll */
-                padding: 2mm; 
-            }
+            body { background: #fff; padding: 0; margin: 0; }
+            .setup-box, .action-col, .btn-del { display: none !important; }
+            .b8-receipt { border: none; width: 100% !important; padding: 1mm; margin: 0; }
         }
     </style>
 </head>
 <body>
 
-<div class="no-print-panel">
-    <h3>Shri Shyam Fast Food Counter</h3>
-    <input type="text" id="custName" placeholder="Customer Name (Optional)" value="Cash Bill">
-    <input type="text" id="itemName" placeholder="Item Name (e.g. Chowmein)">
-    <div class="flex-row">
+<div class="setup-box">
+    <strong style="display:block; text-align:center; margin-bottom:5px;">Shri Shyam Fast Food</strong>
+    <input type="text" id="custName" placeholder="Customer Name" value="Cash Bill">
+    <input type="text" id="itemName" placeholder="Item Name (e.g. Momo)">
+    <div style="display: flex; gap: 4px;">
         <input type="number" id="itemRate" placeholder="Rate (₹)">
         <input type="number" id="itemQty" placeholder="Qty" value="1">
     </div>
@@ -102,70 +85,71 @@
         <option value="0">0% GST</option>
     </select>
     <button class="btn btn-add" onclick="addItem()">+ Add Item</button>
-    <button class="btn btn-print" onclick="directPrint()">🖨️ Direct Print Invoice</button>
+    <button class="btn btn-print" onclick="printBill()">🖨️ Direct Print (JIS B8)</button>
 </div>
 
-<!-- Actual Receipt -->
-<div class="pos-receipt" id="printable-area">
+<!-- JIS B8 Tiny Receipt Box -->
+<div class="b8-receipt">
     <div class="center">
-        <div class="brand bold">Shri Shyam Fast Food</div>
-        <div class="info-txt">Main Market, Near Temple, City</div>
-        <div class="info-txt">GSTIN: 07AAAAA1111A1Z1</div>
-        <div class="info-txt">Mob: +91 9876543210</div>
+        <div class="brand">Shri Shyam Fast Food</div>
+        <div class="shop-info">Main Market, City</div>
+        <div class="shop-info">GSTIN: 07AAAAA1111A1Z1 | Mob: 9876543210</div>
     </div>
+    
     <div class="divider"></div>
-    <table style="font-size: 8pt;">
+    
+    <table style="font-size: 6.5pt;">
         <tr>
-            <td><span class="bold">Inv No:</span> <span id="bNo"></span></td>
-            <td class="right"><span class="bold">Date:</span> <span id="bDate"></span></td>
+            <td>No: <span id="bNo"></span></td>
+            <td class="right">Dt: <span id="bDate"></span></td>
         </tr>
         <tr>
-            <td colspan="2" style="padding-top:1mm;"><span class="bold">Cust:</span> <span id="lCust">Cash Bill</span></td>
+            <td colspan="2">Cust: <span id="lCust">Cash Bill</span></td>
         </tr>
     </table>
+    
     <div class="divider"></div>
+    
     <table>
         <thead>
             <tr>
-                <th style="width: 50%;">Item</th>
+                <th style="width: 55%;">Item</th>
                 <th class="right" style="width: 15%;">Qty</th>
-                <th class="right" style="width: 15%;">Rate</th>
-                <th class="right" style="width: 20%;">Total</th>
+                <th class="right" style="width: 30%;">Total</th>
                 <th class="action-col center" style="width: 10%;">X</th>
             </tr>
         </thead>
         <tbody id="itemList"></tbody>
     </table>
+    
     <div class="divider"></div>
+    
     <table class="total-table">
         <tr>
-            <td style="width: 60%;" class="right">Sub Total:</td>
+            <td style="width: 60%;" class="right">Sub Tot:</td>
             <td class="right">₹<span id="subTotal">0.00</span></td>
         </tr>
         <tr>
-            <td class="right">CGST:</td>
-            <td class="right">₹<span id="cgst">0.00</span></td>
-        </tr>
-        <tr>
-            <td class="right">SGST:</td>
-            <td class="right">₹<span id="sgst">0.00</span></td>
+            <td class="right">Tax (GST):</td>
+            <td class="right">₹<span id="taxTotal">0.00</span></td>
         </tr>
         <tr class="grand-row">
             <td class="right grand-line">NET TOTAL:</td>
             <td class="right grand-line">₹<span id="netTotal">0.00</span></td>
         </tr>
     </table>
-    <div class="center info-txt" style="margin-top: 4mm;">Thank You! Visit Again.</div>
+    
+    <div class="center" style="margin-top: 3mm; font-size: 6.5pt;">Thank You! Visit Again.</div>
 </div>
 
 <script>
     document.getElementById('bDate').innerText = new Date().toLocaleDateString('en-IN');
-    document.getElementById('bNo').innerText = 'SS-' + Math.floor(1000 + Math.random() * 9000);
+    document.getElementById('bNo').innerText = 'SS-' + Math.floor(100 + Math.random() * 900);
     document.getElementById('custName').addEventListener('input', function() {
         document.getElementById('lCust').innerText = this.value || 'Cash Bill';
     });
 
-    let dataCart = [];
+    let b8Cart = [];
 
     function addItem() {
         const name = document.getElementById('itemName').value;
@@ -173,49 +157,48 @@
         const qty = parseInt(document.getElementById('itemQty').value);
         const gst = parseFloat(document.getElementById('itemGst').value);
 
-        if (!name || isNaN(rate) || isNaN(qty)) { alert("Enter valid details!"); return; }
+        if (!name || isNaN(rate) || isNaN(qty)) { alert("Sahi details dalein!"); return; }
 
         const total = rate * qty;
         const gstVal = (total * gst) / 100;
         const net = total + gstVal;
 
-        dataCart.push({ id: Date.now(), name, qty, rate, gst, total, gstVal, net });
-        renderTable();
+        b8Cart.push({ id: Date.now(), name, qty, total, gstVal, net });
+        renderB8Table();
+        
         document.getElementById('itemName').value = '';
         document.getElementById('itemRate').value = '';
         document.getElementById('itemQty').value = '1';
     }
 
     function removeRow(id) {
-        dataCart = dataCart.filter(x => x.id !== id);
-        renderTable();
+        b8Cart = b8Cart.filter(x => x.id !== id);
+        renderB8Table();
     }
 
-    function renderTable() {
+    function renderB8Table() {
         const tbody = document.getElementById('itemList');
         tbody.innerHTML = '';
         let st = 0, gt = 0, nt = 0;
 
-        dataCart.forEach(i => {
+        b8Cart.forEach(i => {
             st += i.total; gt += i.gstVal; nt += i.net;
             tbody.innerHTML += `
                 <tr>
-                    <td>${i.name}<br><span class="gst-mark">GST ${i.gst}%</span></td>
+                    <td>${i.name}</td>
                     <td class="right">${i.qty}</td>
-                    <td class="right">${i.rate.toFixed(2)}</td>
                     <td class="right">${i.net.toFixed(2)}</td>
                     <td class="action-col center"><button class="btn-del" onclick="removeRow(${i.id})">x</button></td>
                 </tr>`;
         });
 
         document.getElementById('subTotal').innerText = st.toFixed(2);
-        document.getElementById('cgst').innerText = (gt / 2).toFixed(2);
-        document.getElementById('sgst').innerText = (gt / 2).toFixed(2);
+        document.getElementById('taxTotal').innerText = gt.toFixed(2);
         document.getElementById('netTotal').innerText = Math.round(nt).toFixed(2);
     }
 
-    function directPrint() {
-        if (dataCart.length === 0) { alert("Please add items first!"); return; }
+    function printBill() {
+        if (b8Cart.length === 0) { alert("Pehle item add karein!"); return; }
         window.print();
     }
 </script>
