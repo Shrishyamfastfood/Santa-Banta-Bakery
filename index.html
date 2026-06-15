@@ -3,205 +3,501 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shri Shyam Fast Food - JIS B8 Bill</title>
+    <title>Prince Gramin Bank - Core Banking Terminal</title>
     <style>
-        * { box-sizing: border-box; }
-        body {
+        :root {
+            --primary-color: #1a5276;
+            --secondary-color: #2e4053;
+            --accent-color: #27ae60;
+            --danger-color: #cb4335;
+            --bg-color: #f4f6f7;
+            --panel-bg: #ffffff;
+            --text-color: #2c3e50;
+            --border-color: #bdc3c7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             font-family: 'Courier New', Courier, monospace;
-            margin: 0; padding: 4px;
-            background-color: #f4f4f4; color: #000;
-            font-size: 7.5pt; /* Chote paper ke liye compact font */
-            line-height: 1.1;
         }
 
-        /* Entry Form Panel (Sirf Screen par dikhega) */
-        .setup-box {
-            max-width: 260px; margin: 5px auto;
-            background: #fff; padding: 10px;
-            border-radius: 6px; border: 1px solid #ccc;
-            font-family: Arial, sans-serif; font-size: 11px;
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 10px;
         }
-        .setup-box input, .setup-box select {
-            width: 100%; padding: 5px; margin-bottom: 6px; border: 1px solid #ddd; border-radius: 4px;
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+
+        .bank-title h1 {
+            font-size: 20px;
+            letter-spacing: 1px;
+        }
+
+        .bank-title p {
+            font-size: 11px;
+            color: #d4e6f1;
+        }
+
+        .terminal-info {
+            text-align: right;
+            font-size: 12px;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 15px;
+        }
+
+        .sidebar {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .panel-heading {
+            background: var(--secondary-color);
+            color: white;
+            padding: 6px 10px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            background-color: #fcfcfc;
+            font-size: 13px;
+            font-weight: bold;
+            color: #111;
+        }
+
         .btn {
-            width: 100%; padding: 8px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; color: white;
+            display: inline-block;
+            width: 100%;
+            padding: 10px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            text-transform: uppercase;
         }
-        .btn-add { background: #e67e22; margin-bottom: 4px; }
-        .btn-print { background: #27ae60; font-size: 12px; }
-        .btn-del { background: #c0392b; color: white; border: none; padding: 1px 4px; cursor: pointer; font-size: 8px; }
 
-        /* STRICT JIS B8 SIZE BLOCK (64mm Width) */
-        .b8-receipt {
-            width: 58mm; /* 64mm paper size me safely fit hone ke liye printable width */
-            margin: 10px auto;
-            background: #fff;
-            padding: 1mm;
-            border: 1px dashed #bbb;
+        .btn:hover { opacity: 0.9; }
+
+        .account-card {
+            margin-top: 15px;
+            border: 1px dashed var(--border-color);
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 3px;
         }
-        
-        .center { text-align: center; }
-        .right { text-align: right; }
-        .bold { font-weight: bold; }
-        .brand { font-size: 10pt; font-weight: bold; text-transform: uppercase; margin: 0; }
-        .shop-info { font-size: 6.5pt; margin: 0.5mm 0; }
-        .divider { border-top: 1px dashed #000; margin: 1.5mm 0; }
-        
-        table { width: 100%; border-collapse: collapse; font-size: 7.5pt; }
-        th { border-bottom: 1px dashed #000; padding-bottom: 0.5mm; text-align: left; font-weight: bold; }
-        td { padding: 1mm 0; vertical-align: top; }
-        
-        .total-table { width: 100%; font-size: 7.5pt; margin-top: 1mm; }
-        .total-table td { padding: 0.5mm 0; }
-        .grand-row { font-size: 8.5pt; font-weight: bold; }
-        .grand-line { border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 1mm 0; }
 
-        /* JIS B8 DIRECT PRINT SETTINGS */
-        @media print {
-            @page {
-                size: 64mm auto; /* Locks width to exact JIS B8 width, height automatically adjusts */
-                margin: 0mm !important;
-            }
-            body { background: #fff; padding: 0; margin: 0; }
-            .setup-box, .action-col, .btn-del { display: none !important; }
-            .b8-receipt { border: none; width: 100% !important; padding: 1mm; margin: 0; }
+        .account-prop {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 6px;
+            border-bottom: 1px dotted #ddd;
+            padding-bottom: 4px;
+        }
+
+        .balance-display {
+            font-size: 18px;
+            color: var(--primary-color);
+            text-align: right;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .tab {
+            padding: 8px 16px;
+            background: #e5e7e9;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            margin-right: 4px;
+        }
+
+        .tab.active {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .tab-content {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            padding: 20px;
+            min-height: 220px;
+        }
+
+        .tx-panel { display: none; }
+        .tx-panel.active { display: block; }
+
+        .denomination-table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .denomination-table th, .denomination-table td {
+            border: 1px solid var(--border-color);
+            padding: 5px;
+            text-align: center;
+        }
+
+        .denomination-table input {
+            width: 50px;
+            padding: 2px;
+            text-align: center;
+        }
+
+        .log-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+        }
+
+        .log-table-container {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .log-table th, .log-table td {
+            padding: 6px;
+            border-bottom: 1px solid #efebe9;
+            text-align: left;
+        }
+
+        .badge {
+            padding: 2px 5px;
+            border-radius: 2px;
+            font-size: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .bg-deposit { background-color: var(--accent-color); }
+        .bg-withdraw { background-color: var(--danger-color); }
+        .bg-transfer { background-color: #f39c12; }
+        .flex-row { display: flex; gap: 15px; }
+        .flex-child { flex: 1; }
+        
+        .signature-box {
+            border: 1px solid var(--border-color);
+            height: 80px;
+            background: #fffdf0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
 
-<div class="setup-box">
-    <strong style="display:block; text-align:center; margin-bottom:5px;">Shri Shyam Fast Food</strong>
-    <input type="text" id="custName" placeholder="Customer Name" value="Cash Bill">
-    <input type="text" id="itemName" placeholder="Item Name (e.g. Momo)">
-    <div style="display: flex; gap: 4px;">
-        <input type="number" id="itemRate" placeholder="Rate (₹)">
-        <input type="number" id="itemQty" placeholder="Qty" value="1">
+    <header>
+        <div class="bank-title">
+            <h1>PRINCE GRAMIN BANK</h1>
+            <p>Core Banking Terminal v4.2 - Teller Mainframe</p>
+        </div>
+        <div class="terminal-info">
+            <div>TELLER ID: PGB-9941</div>
+            <div id="live-time">Loading...</div>
+        </div>
+    </header>
+
+    <div class="workspace">
+        <div class="sidebar">
+            <div class="panel-heading">Search Account</div>
+            <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" id="search-acc" class="form-control" value="1000215432">
+            </div>
+            <button class="btn" onclick="fetchAccount()">Load Master File</button>
+
+            <div class="account-card">
+                <div class="account-prop"><span>A/C No:</span><span id="disp-acc">---------</span></div>
+                <div class="account-prop"><span>Name:</span><span id="disp-name">---------</span></div>
+                <div class="account-prop"><span>Type:</span><span id="disp-type">---------</span></div>
+                <div class="account-prop"><span>IFSC:</span><span id="disp-ifsc">---------</span></div>
+                <div style="font-size: 11px; color: #7f8c8d; margin-top:5px;">Available Balance:</div>
+                <div class="balance-display" id="disp-balance">₹ 0.00</div>
+            </div>
+        </div>
+
+        <div class="main-panel">
+            <div>
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('tab-deposit', this)">Cash Deposit</div>
+                    <div class="tab" onclick="switchTab('tab-withdraw', this)">Cash Withdrawal</div>
+                    <div class="tab" onclick="switchTab('tab-transfer', this)">IMPS/NEFT (UTR)</div>
+                </div>
+
+                <div class="tab-content">
+                    <div id="tab-deposit" class="tx-panel active">
+                        <div class="flex-row">
+                            <div class="flex-child">
+                                <div class="form-group">
+                                    <label>Amount to Deposit (₹)</label>
+                                    <input type="number" id="dep-amount" class="form-control" oninput="calculateDenomination()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Remarks / Depositor</label>
+                                    <input type="text" id="dep-remarks" class="form-control" placeholder="Self">
+                                </div>
+                                <button class="btn" style="background:var(--accent-color);" onclick="executeDeposit()">Execute Cash In</button>
+                            </div>
+                            <div class="flex-child" style="border-left: 1px dashed #ccc; padding-left:15px;">
+                                <label style="font-size:11px; font-weight:bold;">Cash Counter Entry</label>
+                                <table class="denomination-table">
+                                    <tr><td>500 x</td><td><input type="number" id="d500" value="0" oninput="calculateDenomination()"></td><td id="v500">0</td></tr>
+                                    <tr><td>200 x</td><td><input type="number" id="d200" value="0" oninput="calculateDenomination()"></td><td id="v200">0</td></tr>
+                                    <tr><td>100 x</td><td><input type="number" id="d100" value="0" oninput="calculateDenomination()"></td><td id="v100">0</td></tr>
+                                    <tr style="font-weight:bold;"><td>Total:</td><td></td><td id="denom-total">0</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-withdraw" class="tx-panel">
+                        <div class="flex-row">
+                            <div class="flex-child">
+                                <div class="form-group">
+                                    <label>Amount to Debit (₹)</label>
+                                    <input type="number" id="wit-amount" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Cheque / Slip Number</label>
+                                    <input type="text" id="wit-ref" class="form-control">
+                                </div>
+                                <button class="btn" style="background:var(--danger-color);" onclick="executeWithdrawal()">Dispense Cash</button>
+                            </div>
+                            <div class="flex-child" style="border-left: 1px dashed #ccc; padding-left:15px;">
+                                <label style="font-size:11px; font-weight:bold;">Signature Verification Screen</label>
+                                <div class="signature-box" id="sig-display">No Account</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-transfer" class="tx-panel">
+                        <div class="flex-row">
+                            <div class="flex-child">
+                                <div class="form-group">
+                                    <label>Mode</label>
+                                    <select id="tx-mode" class="form-control" onchange="generateUTR()">
+                                        <option value="IMPS">IMPS (Instant)</option>
+                                        <option value="NEFT">NEFT</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Beneficiary A/C</label>
+                                    <input type="text" id="tx-ben-acc" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Beneficiary IFSC</label>
+                                    <input type="text" id="tx-ben-ifsc" class="form-control">
+                                </div>
+                            </div>
+                            <div class="flex-child">
+                                <div class="form-group">
+                                    <label>Transfer Amount (₹)</label>
+                                    <input type="number" id="tx-amount" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Auto-Generated UTR Number</label>
+                                    <input type="text" id="tx-utr" class="form-control" readonly style="background:#eee;">
+                                </div>
+                                <button class="btn" style="background:#f39c12; margin-top:20px;" onclick="executeTransfer()">Transmit Funds</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="log-panel">
+                <div class="panel-heading" style="background:#34495e;">Daily Transaction Journal Ledger</div>
+                <div class="log-table-container">
+                    <table class="log-table">
+                        <thead>
+                            <tr><th>Txn ID / UTR</th><th>Account</th><th>Type</th><th>Amount</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="journal-feed">
+                            <tr><td>PGB982315412</td><td>1000215432</td><td><span class="badge bg-deposit">DEPOSIT</span></td><td>5,000.00</td><td style="color:green;font-weight:bold;">SUCCESS</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-    <select id="itemGst">
-        <option value="5" selected>5% GST</option>
-        <option value="12">12% GST</option>
-        <option value="18">18% GST</option>
-        <option value="0">0% GST</option>
-    </select>
-    <button class="btn btn-add" onclick="addItem()">+ Add Item</button>
-    <button class="btn btn-print" onclick="printBill()">🖨️ Direct Print (JIS B8)</button>
-</div>
 
-<!-- JIS B8 Tiny Receipt Box -->
-<div class="b8-receipt">
-    <div class="center">
-        <div class="brand">Shri Shyam Fast Food</div>
-        <div class="shop-info">Main Market, City</div>
-        <div class="shop-info">GSTIN: 07AAAAA1111A1Z1 | Mob: 9876543210</div>
-    </div>
-    
-    <div class="divider"></div>
-    
-    <table style="font-size: 6.5pt;">
-        <tr>
-            <td>No: <span id="bNo"></span></td>
-            <td class="right">Dt: <span id="bDate"></span></td>
-        </tr>
-        <tr>
-            <td colspan="2">Cust: <span id="lCust">Cash Bill</span></td>
-        </tr>
-    </table>
-    
-    <div class="divider"></div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 55%;">Item</th>
-                <th class="right" style="width: 15%;">Qty</th>
-                <th class="right" style="width: 30%;">Total</th>
-                <th class="action-col center" style="width: 10%;">X</th>
-            </tr>
-        </thead>
-        <tbody id="itemList"></tbody>
-    </table>
-    
-    <div class="divider"></div>
-    
-    <table class="total-table">
-        <tr>
-            <td style="width: 60%;" class="right">Sub Tot:</td>
-            <td class="right">₹<span id="subTotal">0.00</span></td>
-        </tr>
-        <tr>
-            <td class="right">Tax (GST):</td>
-            <td class="right">₹<span id="taxTotal">0.00</span></td>
-        </tr>
-        <tr class="grand-row">
-            <td class="right grand-line">NET TOTAL:</td>
-            <td class="right grand-line">₹<span id="netTotal">0.00</span></td>
-        </tr>
-    </table>
-    
-    <div class="center" style="margin-top: 3mm; font-size: 6.5pt;">Thank You! Visit Again.</div>
-</div>
+    <script>
+        // Fake Local Account Database
+        const db = {
+            "1000215432": { name: "Rajesh Kumar", balance: 45250.00, type: "SAVINGS", ifsc: "PRGB0004022", sig: "Rajesh Kumar" },
+            "1000215888": { name: "Priya Sharma", balance: 125000.00, type: "CURRENT", ifsc: "PRGB0004022", sig: "P. Sharma" }
+        };
 
-<script>
-    document.getElementById('bDate').innerText = new Date().toLocaleDateString('en-IN');
-    document.getElementById('bNo').innerText = 'SS-' + Math.floor(100 + Math.random() * 900);
-    document.getElementById('custName').addEventListener('input', function() {
-        document.getElementById('lCust').innerText = this.value || 'Cash Bill';
-    });
+        let currentAcc = null;
 
-    let b8Cart = [];
+        // Live Clock Sync
+        setInterval(() => {
+            document.getElementById('live-time').innerText = new Date().toLocaleString('en-GB');
+        }, 1000);
 
-    function addItem() {
-        const name = document.getElementById('itemName').value;
-        const rate = parseFloat(document.getElementById('itemRate').value);
-        const qty = parseInt(document.getElementById('itemQty').value);
-        const gst = parseFloat(document.getElementById('itemGst').value);
+        function fetchAccount() {
+            const accNo = document.getElementById('search-acc').value.trim();
+            if (db[accNo]) {
+                currentAcc = accNo;
+                document.getElementById('disp-acc').innerText = accNo;
+                document.getElementById('disp-name').innerText = db[accNo].name;
+                document.getElementById('disp-type').innerText = db[accNo].type;
+                document.getElementById('disp-ifsc').innerText = db[accNo].ifsc;
+                document.getElementById('sig-display').innerText = db[accNo].sig;
+                document.getElementById('sig-display').style.fontFamily = "cursive";
+                updateBalance();
+            } else {
+                alert("❌ Account Not Found in Prince Gramin Bank!");
+            }
+        }
 
-        if (!name || isNaN(rate) || isNaN(qty)) { alert("Sahi details dalein!"); return; }
+        function updateBalance() {
+            if(currentAcc) {
+                document.getElementById('disp-balance').innerText = "₹ " + db[currentAcc].balance.toFixed(2);
+            }
+        }
 
-        const total = rate * qty;
-        const gstVal = (total * gst) / 100;
-        const net = total + gstVal;
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tx-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+            if(tabId === 'tab-transfer') generateUTR();
+        }
 
-        b8Cart.push({ id: Date.now(), name, qty, total, gstVal, net });
-        renderB8Table();
-        
-        document.getElementById('itemName').value = '';
-        document.getElementById('itemRate').value = '';
-        document.getElementById('itemQty').value = '1';
-    }
+        function calculateDenomination() {
+            const n500 = parseInt(document.getElementById('d500').value) || 0;
+            const n200 = parseInt(document.getElementById('d200').value) || 0;
+            const n100 = parseInt(document.getElementById('d100').value) || 0;
+            
+            document.getElementById('v500').innerText = n500 * 500;
+            document.getElementById('v200').innerText = n200 * 200;
+            document.getElementById('v100').innerText = n100 * 100;
+            
+            document.getElementById('denom-total').innerText = (n500*500) + (n200*200) + (n100*100);
+        }
 
-    function removeRow(id) {
-        b8Cart = b8Cart.filter(x => x.id !== id);
-        renderB8Table();
-    }
+        function generateUTR() {
+            const mode = document.getElementById('tx-mode').value;
+            document.getElementById('tx-utr').value = mode + "R" + Math.floor(1000000000 + Math.random() * 9000000000);
+        }
 
-    function renderB8Table() {
-        const tbody = document.getElementById('itemList');
-        tbody.innerHTML = '';
-        let st = 0, gt = 0, nt = 0;
+        function executeDeposit() {
+            if(!currentAcc) return alert("Please load account first!");
+            const amt = parseFloat(document.getElementById('dep-amount').value);
+            const denom = parseFloat(document.getElementById('denom-total').innerText);
+            
+            if(!amt || amt <= 0) return alert("Enter valid amount!");
+            if(denom !== amt) return alert("❌ Cashier Mismatch: Cash Bundle count and Amount do not match!");
 
-        b8Cart.forEach(i => {
-            st += i.total; gt += i.gstVal; nt += i.net;
-            tbody.innerHTML += `
-                <tr>
-                    <td>${i.name}</td>
-                    <td class="right">${i.qty}</td>
-                    <td class="right">${i.net.toFixed(2)}</td>
-                    <td class="action-col center"><button class="btn-del" onclick="removeRow(${i.id})">x</button></td>
-                </tr>`;
-        });
+            db[currentAcc].balance += amt;
+            const txId = "PGBDEP" + Math.floor(100000 + Math.random() * 900000);
+            logTx(txId, currentAcc, "DEPOSIT", amt);
+            updateBalance();
+            alert("✅ Deposit Successful!");
+        }
 
-        document.getElementById('subTotal').innerText = st.toFixed(2);
-        document.getElementById('taxTotal').innerText = gt.toFixed(2);
-        document.getElementById('netTotal').innerText = Math.round(nt).toFixed(2);
-    }
+        function executeWithdrawal() {
+            if(!currentAcc) return alert("Please load account first!");
+            const amt = parseFloat(document.getElementById('wit-amount').value);
+            if(!amt || amt <= 0) return alert("Enter valid amount!");
+            if(amt > db[currentAcc].balance) return alert("❌ Insufficient Funds!");
 
-    function printBill() {
-        if (b8Cart.length === 0) { alert("Pehle item add karein!"); return; }
-        window.print();
-    }
-</script>
+            db[currentAcc].balance -= amt;
+            const txId = "PGBWIT" + Math.floor(100000 + Math.random() * 900000);
+            logTx(txId, currentAcc, "WITHDRAW", amt);
+            updateBalance();
+            alert("✅ Cash Paid Out Successfully!");
+        }
 
+        function executeTransfer() {
+            if(!currentAcc) return alert("Please load account first!");
+            const amt = parseFloat(document.getElementById('tx-amount').value);
+            const utr = document.getElementById('tx-utr').value;
+            if(!amt || amt <= 0) return alert("Enter valid amount!");
+            if(amt > db[currentAcc].balance) return alert("❌ Insufficient Balance!");
+
+            db[currentAcc].balance -= amt;
+            logTx(utr, currentAcc, "TRANSFER", amt);
+            updateBalance();
+            alert("✅ Fund Transmitted to Interbank Gateway! UTR: " + utr);
+        }
+
+        function logTx(id, acc, type, amt) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td><b>${id}</b></td><td>${acc}</td><td><span class="badge bg-${type.toLowerCase()}">${type}</span></td><td>${amt.toFixed(2)}</td><td style="color:green;font-weight:bold;">SUCCESS</td>`;
+            document.getElementById('journal-feed').insertBefore(row, document.getElementById('journal-feed').firstChild);
+        }
+
+        window.onload = fetchAccount;
+    </script>
 </body>
 </html>
