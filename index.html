@@ -58,7 +58,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
         .bank-title h1 {
@@ -209,11 +208,8 @@
         .denom-grid { background: #f1f5f9; border-radius: 8px; padding: 12px; }
         
         .table-modern { width: 100%; border-collapse: collapse; font-size: 13px; }
-        
         .table-modern th { text-align: left; padding: 10px; background: #f1f5f9; color: var(--text-muted); font-weight: 600; }
-        
         .table-modern td { padding: 12px 10px; border-bottom: 1px solid var(--border); }
-        
         .table-modern tr:last-child td { border-bottom: none; }
 
         .denom-input {
@@ -265,11 +261,12 @@
         </div>
         <div class="terminal-status">
             <div><b>TELLER:</b> Active (PGB-MOU-09)</div>
-            <div id="live-clock">Connecting...</div>
+            <div id="live-clock">Loading...</div>
         </div>
     </header>
 
     <div class="dashboard">
+        <!-- LEFT PANEL -->
         <div class="left-col">
             <div class="card">
                 <div class="card-title">🔍 Customer Account Desk</div>
@@ -289,6 +286,112 @@
                 </div>
             </div>
         </div>
+
+        <!-- RIGHT PANEL OPERATIONS -->
+        <div class="right-col">
+            <div class="tabs">
+                <div class="tab active" onclick="switchPane('pane-deposit', this)">Cash Deposit</div>
+                <div class="tab" onclick="switchPane('pane-withdraw', this)">Cash Withdrawal</div>
+                <div class="tab" onclick="switchPane('pane-transfer', this)">IMPS / NEFT Remittance</div>
+            </div>
+
+            <div class="tab-content">
+                <!-- 1. DEPOSIT -->
+                <div id="pane-deposit" class="pane active">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <div class="form-group">
+                                <label>Deposit Amount (₹)</label>
+                                <input type="number" id="dep-amt" class="form-control" placeholder="5000" oninput="sumDenom()">
+                            </div>
+                            <div class="form-group">
+                                <label>Remitter Name</label>
+                                <input type="text" id="dep-remitter" class="form-control" placeholder="Self">
+                            </div>
+                            <button class="btn" style="background:var(--success);" onclick="processDeposit()">Post Cash-In Ticket</button>
+                        </div>
+                        <div class="denom-grid">
+                            <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:8px;">Physical Cash Vault Verification</label>
+                            <table style="width:100%; font-size:12px;">
+                                <tr><td>₹500</td><td><input type="number" id="c500" class="denom-input" value="10" oninput="sumDenom()"></td><td>= ₹<span id="v500">5000</span></td></tr>
+                                <tr><td>₹200</td><td><input type="number" id="c200" class="denom-input" value="0" oninput="sumDenom()"></td><td>= ₹<span id="v200">0</span></td></tr>
+                                <tr><td>₹100</td><td><input type="number" id="c100" class="denom-input" value="0" oninput="sumDenom()"></td><td>= ₹<span id="v100">0</span></td></tr>
+                                <tr style="font-weight:bold; color:var(--primary);"><td style="padding-top:10px;">Total Box:</td><td></td><td style="padding-top:10px;">₹<span id="box-total">5000</span></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. WITHDRAWAL -->
+                <div id="pane-withdraw" class="pane">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <div class="form-group">
+                                <label>Withdrawal Amount (₹)</label>
+                                <input type="number" id="wit-amt" class="form-control" placeholder="2000">
+                            </div>
+                            <div class="form-group">
+                                <label>Cheque / Slip Leaf Reference No.</label>
+                                <input type="text" id="wit-ref" class="form-control" placeholder="451209">
+                            </div>
+                            <button class="btn" style="background:var(--danger);" onclick="processWithdrawal()">Dispense & Debit Cash</button>
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:700; color:var(--text-muted); display:block; margin-bottom:8px;">Sign Verification Specimen</label>
+                            <div class="signature-pad" id="sig-window">Rajesh Kumar</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. TRANSFER -->
+                <div id="pane-transfer" class="pane">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <div class="form-group">
+                                <label>Gateway Route</label>
+                                <select id="trn-route" class="form-control" onchange="makeUTR()">
+                                    <option value="IMPS">IMPS (Instant Settlement)</option>
+                                    <option value="NEFT">NEFT Clearing Batches</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Beneficiary A/C No.</label>
+                                <input type="text" id="trn-acc" class="form-control" value="9876543210">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="form-group">
+                                <label>Beneficiary IFSC</label>
+                                <input type="text" id="trn-ifsc" class="form-control" value="BARB0MOULAS">
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (₹)</label>
+                                <input type="number" id="trn-amt" class="form-control" placeholder="1500">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; border-top:1px solid var(--border); padding-top:15px;">
+                        <span style="font-size:12px; font-weight:600;">Generated UTR: <code id="utr-disp" style="background:#f1f5f9; padding:4px 8px; border-radius:4px; color:var(--primary);">------</code></span>
+                        <button class="btn" style="width:200px; background:var(--warning);" onclick="processTransfer()">Transmit Remittance</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SYSTEM LEDGER -->
+            <div class="card" style="margin-top:25px; padding:15px;">
+                <div class="card-title" style="color:var(--secondary); margin-bottom:10px;">📋 Live Daily Teller Transaction Journal Feed</div>
+                <div class="log-container">
+                    <table class="table-modern">
+                        <thead>
+                            <tr><th>Txn Ref ID / UTR</th><th>Account No</th><th>Operation</th><th>Txn Value</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="journal-rows"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const accountsCache = {};
         const firstNames = ["Rajesh", "Suresh", "Ramesh", "Vijay", "Pooja", "Amit", "Deepak", "Sunita", "Anil", "Vikram", "Mahendra", "Sanjay", "Kamlesh", "Narendra"];
@@ -308,8 +411,6 @@
 
             if (!accountsCache[accInput]) {
                 const randName = firstNames[Math.floor(Math.random() * firstNames.length)] + " " + lastNames[Math.floor(Math.random() * lastNames.length)];
-                
-                // Probability Matrix System: 98% (1k-10k) and 2% (>10k)
                 const diceRoll = Math.random();
                 let generatedBalance = 0;
                 
@@ -339,10 +440,10 @@
         }
 
         function getActiveAccount() {
-            const current = document.getElementById('card-acc').innerText;
+            let current = document.getElementById('card-acc').innerText;
             if (current === "---------") {
-                alert("⚠️ System Hold: Please query and 'Pull Account Profile' first!");
-                return null;
+                loadAccount(); // Auto-load if user tries to transact directly
+                current = document.getElementById('card-acc').innerText;
             }
             return current;
         }
@@ -377,10 +478,8 @@
             const acc = getActiveAccount();
             if (!acc) return;
 
-            const amt = parseFloat(document.getElementById('dep-amt').value);
-            const boxTotal = parseFloat(document.getElementById('box-total').innerText);
-
-            if (!amt || amt <= 0) return alert("Input a valid deposit valuation ticket!");
+            const amt = parseFloat(document.getElementById('dep-amt').value) || parseFloat(document.getElementById('box-total').innerText);
+if (!amt || amt <= 0) return alert("Input a valid deposit valuation ticket!");
             if (boxTotal > 0 && boxTotal !== amt) {
                 return alert("❌ Vault Alert: Physical cash bundle summary doesn't equal transaction posting ticket!");
             }
@@ -392,14 +491,13 @@
             updateBalanceView(acc);
             
             alert(`✅ Posted Successfully! Account holder: ${accountsCache[acc].name} credited.`);
-            document.getElementById('dep-amt').value = "";
         }
 
         function processWithdrawal() {
             const acc = getActiveAccount();
             if (!acc) return;
 
-            const amt = parseFloat(document.getElementById('wit-amt').value);
+            const amt = parseFloat(document.getElementById('wit-amt').value) || 2000;
             if (!amt || amt <= 0) return alert("Specify valid cash dispatch amount!");
             if (amt > accountsCache[acc].balance) return alert("❌ Transaction Dropped: Core ledger indicates Insufficient Balance!");
 
@@ -410,14 +508,12 @@
             updateBalanceView(acc);
             
             alert(`✅ Cash Dispensed! Account Debited.`);
-            document.getElementById('wit-amt').value = "";
         }
-
-        function processTransfer() {
+function processTransfer() {
             const acc = getActiveAccount();
             if (!acc) return;
 
-            const amt = parseFloat(document.getElementById('trn-amt').value);
+            const amt = parseFloat(document.getElementById('trn-amt').value) || 1500;
             const target = document.getElementById('trn-acc').value;
             const ifsc = document.getElementById('trn-ifsc').value;
             const utr = document.getElementById('utr-disp').innerText;
@@ -431,8 +527,6 @@
             updateBalanceView(acc);
             
             alert(`🚀 Gateway accepted payload! Funds routed externally via RBI Hub. Tracking UTR: ${utr}`);
-            document.getElementById('trn-amt').value = "";
-            document.getElementById('trn-acc').value = "";
             makeUTR();
         }
 
@@ -449,7 +543,10 @@
             rows.insertBefore(row, rows.firstChild);
         }
 
-        window.onload = loadAccount;
+        window.onload = function() {
+            loadAccount();
+            sumDenom();
+        };
     </script>
 </body>
 </html>
